@@ -90,14 +90,14 @@ def make_prob_table(
 
     return prob_dict
 
-def terminal_state_values(func : Callable[[tuple[int,...]],int]):
+def last_layer(func : Callable[[tuple[int,...]],int]) -> Dict[tuple[int,...], list[None, int]]:
 
     hands = dice_combinations(dice_thrown=DICE_COUNT,num_sides=NUM_SIDES)
     layer = {}
 
     for h in hands:
         score = func(h)
-        layer[h] = score
+        layer[h] = [None, score]
 
 
     return layer

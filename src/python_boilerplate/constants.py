@@ -1,6 +1,7 @@
 DIE_FACES = (1,2,3,4,5,6)
 DICE_COUNT = 5
 NUM_SIDES = 6
+NUM_THROWS = 3
 
 
 

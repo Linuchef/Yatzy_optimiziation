@@ -1,10 +1,10 @@
-from python_boilerplate.hands import outcomes, dice_combinations, keep_hands
+from python_boilerplate.hands import outcomes, dice_combinations, keep_hands, last_layer
 from python_boilerplate.utils import dice_missing
-from python_boilerplate.constants import DICE_COUNT, NUM_SIDES
-from typing import Dict
+from python_boilerplate.constants import DICE_COUNT, NUM_SIDES, NUM_THROWS
+from typing import Dict, Callable
 
 def expected_value_for_hold(
-        state_values : Dict[tuple[int,...], float], 
+        layer : Dict[tuple[int,...], float], 
         held_dice: tuple[int,...],
         num_rerolled : int
         ) -> float: 
@@ -12,9 +12,9 @@ def expected_value_for_hold(
     """
     Find expected score for a specific hold of dices.  
     
-    :param state_values: Current dictionary of maximum expected 
+    :param layer: Current dictionary of maximum expected 
     scores after a specific number of throws for a given hand.
-    :type state_values: Dict[tuple[int], float]
+    :type layer: Dict[tuple[int], float]
     :param held_dice: a vector of current hold of dice
     :type held_dice: tuple[int,...]
     :param num_rerolled: number of dices to be thrown
@@ -28,21 +28,21 @@ def expected_value_for_hold(
 
     for key in outcomes_throw.keys():
         resulting_hand = tuple(a + b for a,b in zip(held_dice, key)) # Element wise addition 
-        current_val += outcomes_throw[key][1] * state_values[resulting_hand]
+        current_val += outcomes_throw[key][1] * layer[resulting_hand][1]
     
     return current_val
 
 def maximize_expected_value (
-        state_values : Dict[tuple[int,...], float],
+        layer : Dict[tuple[int,...], float],
         holds : tuple[tuple[int,...]]
         ) -> list[tuple[int,...], int]:
     
     """
     Finds the held dice of a hand yielding the biggest expected value. 
     
-    :param state_values: Current dictionary of maximum expected 
+    :param layer: Current dictionary of maximum expected 
     scores after a specific number of throws for a given hand.
-    :type state_values: Dict[tuple[int, ...], float]
+    :type layer: Dict[tuple[int, ...], float]
     :param holds: a tuple containing all possible holds for a hand
     :type holds: tuple[tuple[int, ...]]
     :return: the held dice with best expectation along with its expectation. 
@@ -55,7 +55,7 @@ def maximize_expected_value (
     for h in holds:
         num_rerolled = dice_missing(h)
         expected_val = expected_value_for_hold(
-            state_values=state_values, 
+            layer=layer, 
             held_dice = h, 
             num_rerolled = num_rerolled)
         
@@ -65,21 +65,21 @@ def maximize_expected_value (
     
     return [best_hold, val]
 
-def find_previous_state_values(
-        state_values : Dict[tuple[int,...],float]
-        )-> Dict[tuple[int,...],float]:
+def backward_value_update (
+        layer : Dict[tuple[int,...],int]
+        )-> any:
     
     """
     Function that returns a dictionary containing all optimal 
-    expected values belonging to all hands from the previous state. 
+    expected values belonging to all hands from the previous layer. 
     
-    :param state_values: current state values
-    :type state_values: Dict[tuple[int, ...], float]
+    :param layer: current state values
+    :type layer: Dict[tuple[int, ...], float]
     :return: Previous state values
     :rtype: Dict[tuple[int, ...], float]
     """
 
-    previous_state_values = {}
+    previous_layer_with_hold = {}
     
     hand_combinations = dice_combinations(
         dice_thrown = DICE_COUNT, 
@@ -88,10 +88,39 @@ def find_previous_state_values(
     for hand in hand_combinations:
 
         holds = keep_hands(hand = hand)
-        optimal_hold = maximize_expected_value(state_values = state_values, holds = holds)
+        optimal_hold = maximize_expected_value(layer = layer, holds = holds)
 
-        previous_state_values[hand] = optimal_hold[1]
+        previous_layer_with_hold[hand] = optimal_hold
 
-    return previous_state_values
+    return previous_layer_with_hold
+
+def build_value_layers(
+        score_func : Callable[[tuple[int,...]],int]
+        ) -> list[Dict[tuple[int,...],float]]:
+    
+    """
+    Calculate all the layers and put them in a list.
+    
+    :param score_func: yatzee round
+    :type score_func: Callable[[tuple[int, ...]], int]
+    :return: Returns a list of dictionaries containing optimal
+    expected values for a given hand after a certain throw. 
+    :rtype: list[Dict[tuple[int, ...], float]]
+    """
+    
+    value_layers = []
+
+    layer = last_layer(score_func)
+
+    for i in range(NUM_THROWS - 1):
+
+        previous_layer = backward_value_update(layer = layer)
+        value_layers.append(layer)
+        layer = previous_layer
+
+    return value_layers
+
+
+
 
     
