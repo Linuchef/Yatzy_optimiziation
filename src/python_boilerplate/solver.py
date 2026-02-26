@@ -66,7 +66,8 @@ def maximize_expected_value (
     return [best_hold, val]
 
 def backward_value_update (
-        layer : Dict[tuple[int,...],int]
+        layer : Dict[tuple[int,...],int],
+        throws_left : int
         )-> any:
     
     """
@@ -75,6 +76,8 @@ def backward_value_update (
     
     :param layer: current state values
     :type layer: Dict[tuple[int, ...], float]
+    :param throws_left: Number of throws left for a given round
+    :type throws_left: int
     :return: Previous state values
     :rtype: Dict[tuple[int, ...], float]
     """
@@ -89,6 +92,7 @@ def backward_value_update (
 
         holds = keep_hands(hand = hand)
         optimal_hold = maximize_expected_value(layer = layer, holds = holds)
+        optimal_hold.append(throws_left)
 
         previous_layer_with_hold[hand] = optimal_hold
 
@@ -111,12 +115,13 @@ def build_value_layers(
     value_layers = []
 
     layer = last_layer(score_func)
+    value_layers.append(layer)
 
     for i in range(NUM_THROWS - 1):
 
-        previous_layer = backward_value_update(layer = layer)
-        value_layers.append(layer)
+        previous_layer = backward_value_update(layer = layer, throws_left = i + 1)
         layer = previous_layer
+        value_layers.append(layer)
 
     return value_layers
 

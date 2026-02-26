@@ -97,7 +97,7 @@ def last_layer(func : Callable[[tuple[int,...]],int]) -> Dict[tuple[int,...], li
 
     for h in hands:
         score = func(h)
-        layer[h] = [None, score]
+        layer[h] = [None, score, 0]
 
 
     return layer
