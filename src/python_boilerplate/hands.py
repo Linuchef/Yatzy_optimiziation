@@ -54,7 +54,7 @@ def make_table(
         ) -> tuple[tuple[int,...]]:
     
     """
-    makes a 2-dimensional numpy array consisting of all hands from one dice
+    makes a 2-dimensional numpy array consisting of all hands from zero dice
     upp till max_throws. 
     
     :param max_throws: maximum number of throws
@@ -67,7 +67,7 @@ def make_table(
     
     all_hands = ()
 
-    for n in range(1, max_throws + 1):
+    for n in range(0, max_throws + 1):
         hands = dice_combinations(dice_thrown=n, num_sides = num_sides)
         all_hands += hands
     
