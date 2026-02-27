@@ -1,7 +1,7 @@
 from python_boilerplate.hands import outcomes, dice_combinations, keep_hands, last_layer
 from python_boilerplate.utils import dice_missing
 from python_boilerplate.constants import DICE_COUNT, NUM_SIDES, NUM_THROWS
-from typing import Dict, Callable
+from typing import Dict, Callable, Union
 
 def expected_value_for_hold(
         layer : Dict[tuple[int,...], float], 
@@ -99,7 +99,8 @@ def backward_value_update (
     return previous_layer_with_hold
 
 def build_value_layers(
-        score_func : Callable[[tuple[int,...]],int]
+        score_func : Union[Callable[[tuple[int,...]],int], Callable[[tuple[int,...], int], int]],
+        face : int = None
         ) -> list[Dict[tuple[int,...],float]]:
     
     """
@@ -107,6 +108,8 @@ def build_value_layers(
     
     :param score_func: yatzee round
     :type score_func: Callable[[tuple[int, ...]], int]
+    :param face: input of score function. Default is set to None
+    :type face: int
     :return: Returns a list of dictionaries containing optimal
     expected values for a given hand after a certain throw. 
     :rtype: list[Dict[tuple[int, ...], float]]
@@ -114,7 +117,7 @@ def build_value_layers(
     
     value_layers = []
 
-    layer = last_layer(score_func)
+    layer = last_layer(score_func, face)
     value_layers.append(layer)
 
     for i in range(NUM_THROWS - 1):

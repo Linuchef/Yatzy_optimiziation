@@ -106,7 +106,8 @@ def make_prob_table(
     return prob_dict
 
 def last_layer(
-        func : Callable[[tuple[int,...]],int]
+        func : Union[Callable[[tuple[int,...]],int], Callable[[tuple[int,...], int], int]],
+        face : int = None
         ) -> Dict[tuple[int,...], list[None, int, int]]:
     """
     For each possible hand, the function finds the 
@@ -117,7 +118,7 @@ def last_layer(
 
     :param func: function that inputs one hand
     and outputs the score of that hand. 
-    :type func: Callable[[tuple[int,...]],int]
+    :type func: Union[Callable[[tuple[int,...]],int], Callable[[tuple[int,...], int], int]]
     :return: Returns a dictionary with a given hand
     as the key, and the value being a list consisting of the optimal
     hold (all None as there are no remaining throws), the 
@@ -130,9 +131,14 @@ def last_layer(
     hands = dice_combinations(dice_thrown=DICE_COUNT,num_sides=NUM_SIDES)
     layer = {}
 
-    for h in hands:
-        score = func(h)
-        layer[h] = [None, score, 0]
+    if face is None:
+        for h in hands:
+            score = func(h)
+            layer[h] = [None, score, 0]
+    else:
+        for h in hands:
+            score = func(h,face)
+            layer[h] = [None, score, 0]
 
 
     return layer

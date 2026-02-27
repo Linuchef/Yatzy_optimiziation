@@ -13,7 +13,8 @@ def dice_missing(hand : tuple[int,...])-> int:
 
 def convert_to_pandas(
         layers : list[Dict[tuple[int, ...], list[tuple[int, ...], float, int]]],
-        category : str
+        category_name : str,
+        category_num : int
         ) -> pd.DataFrame:
     
     """
@@ -22,7 +23,11 @@ def convert_to_pandas(
     :param layers: information about optimal play for each hand
     for each round.
     :type layers: list[Dict[tuple[int, ...], list[tuple[int, ...], float, int]]]
-    :param category: category of yatzy (e.g one pair, chance, etc).
+    :param category_name: name of category (e.g one pair, chance, etc).
+    :type category_name: str
+    :param category_num: number of the sequences of the categories (e.g ones = first category, 
+    twos = second category, ..., yatzy = fifteenth category).
+    :type category_num: int
     :return: A pandas dataframe consisting of 5 columns.
     :rtype: pd.DataFrame 
     """
@@ -34,14 +39,12 @@ def convert_to_pandas(
             rows.append({
                 "Hand" : hand,
                 "Hold" : hold,
-                "Expected value" : val,
-                "Throws left" : throws_left,
-                "Category" : category
+                "Expected_value" : val,
+                "Throws_left" : throws_left,
+                "Category_name" : category_name,
+                "Category_number" : category_num
             })
 
     return pd.DataFrame(rows)
 
-def concatenate_dataframes(list_df : list[pd.DataFrame]) -> pd.DataFrame:
-    
-    return pd.concat(list_df)
     
