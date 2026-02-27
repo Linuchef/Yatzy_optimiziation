@@ -1,4 +1,4 @@
-from python_boilerplate.constants import NUM_SIDES
+from python_boilerplate.constants import NUM_SIDES, DICE_COUNT
 
 def one_pair(hand : tuple[int,...]) -> int:   
     score = 0
@@ -107,13 +107,23 @@ def full_house(hand : tuple[int,...]) -> int:
         return 0
 
 
-    
-
 def chance(hand : tuple[int,...]) -> int:
     score = 0
     for k,h in enumerate(hand):
         score += (k+1) * h 
 
+    return score
+
+def yatzy(hand : tuple[int,...]) -> int:
+
+    score = 0
+
+    for i in range(NUM_SIDES):
+        if hand[i] == DICE_COUNT:
+            score = 50
+            
+            return score 
+    
     return score
 
     
