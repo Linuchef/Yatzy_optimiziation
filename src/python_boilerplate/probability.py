@@ -2,11 +2,13 @@ from math import factorial
 
 def hand_probability(hand : tuple[int,...]) -> float:
     """
-    Docstring for hand_probability
+    Finds the probability of getting the specific hand.
     
-    :param hand: Description
+    :param hand: A tuple consisting of the frequency of
+    eyes on the dice. 
     :type hand: np.ndarray[int]
-    :return: Description
+    :return: Returns a float describing the probability
+    of the hand. 
     :rtype: float
     """
 

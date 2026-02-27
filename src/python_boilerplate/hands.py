@@ -79,6 +79,21 @@ def make_prob_table(
         num_sides : int = NUM_SIDES
         ) -> Dict[tuple[int], list[Union[float, tuple[int,...]]]]:
     
+    """
+    Makes a dictionary with keys being each possible
+    hand, and the values being a list the number of 
+    dice and the belonging probability of hand. 
+
+    :param max_throws: number of dice to be thrown.
+    :type max_throws: int
+    :param num_sides: number of sides of a die. This decides
+    the number of elements in the key.
+    :type num_sides: int 
+    :return: a dictionary where each hand has a corresponding 
+    probability and number of dices. 
+    :rtype: Dict[tuple[int], list[Union[float, tuple[int,...]]]]
+    """
+    
     table = make_table(max_throws=max_throws, num_sides=num_sides)
 
     prob_dict = {}
@@ -90,7 +105,27 @@ def make_prob_table(
 
     return prob_dict
 
-def last_layer(func : Callable[[tuple[int,...]],int]) -> Dict[tuple[int,...], list[None, int]]:
+def last_layer(
+        func : Callable[[tuple[int,...]],int]
+        ) -> Dict[tuple[int,...], list[None, int, int]]:
+    """
+    For each possible hand, the function finds the 
+    score given a category in yatzy 
+    (e.g one pair, two pairs, etc). This is used
+    to find the score of the last hand with no 
+    remaining throws. 
+
+    :param func: function that inputs one hand
+    and outputs the score of that hand. 
+    :type func: Callable[[tuple[int,...]],int]
+    :return: Returns a dictionary with a given hand
+    as the key, and the value being a list consisting of the optimal
+    hold (all None as there are no remaining throws), the 
+    score and an element indicating the number of remaining 
+    throws (0 in this case for all key-value pairs).
+    
+    :rtype: Dict[tuple[int,...], list[None, int, int]]
+    """
 
     hands = dice_combinations(dice_thrown=DICE_COUNT,num_sides=NUM_SIDES)
     layer = {}

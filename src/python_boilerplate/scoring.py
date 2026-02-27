@@ -1,5 +1,9 @@
 from python_boilerplate.constants import NUM_SIDES, DICE_COUNT
 
+def same_face_value(hand : tuple[int,...], face : int) -> int:
+    
+    return hand[face - 1] * face
+
 def one_pair(hand : tuple[int,...]) -> int:   
     score = 0
 
