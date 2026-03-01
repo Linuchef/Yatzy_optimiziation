@@ -10,6 +10,10 @@ def dice_missing(hand : tuple[int,...])-> int:
     
     return n
 
+def sum_tuples(x : tuple[int,...], y : tuple[int, ...]) -> tuple[int, ...]:
+
+    return tuple(a + b for a,b in zip(x,y))
+
 
 def convert_to_pandas(
         layers : list[Dict[tuple[int, ...], list[tuple[int, ...], float, int]]],
