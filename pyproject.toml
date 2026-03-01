@@ -1,9 +1,6 @@
 [project]
 name = "python-boilerplate"
 version = "0.1.0"
-dependencies = [
-    "pandas",
-]
 description = "Yatzy Strategies is about finding the best strategies when playing yatzy. It uses stochastic modelling to track and find optimal moves."
 readme = "README.md"
 authors = [
@@ -17,6 +14,7 @@ classifiers = [
 ]
 license = {text = "MIT"}
 dependencies = [
+  "pandas",
   "typer"
 ]
 requires-python = ">= 3.10"
