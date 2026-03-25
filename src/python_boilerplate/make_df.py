@@ -1,4 +1,5 @@
 from python_boilerplate.solver import build_value_layers
+from python_boilerplate.expected_score import find_category_score
 import python_boilerplate.scoring as s 
 from python_boilerplate.utils import convert_to_pandas
 import pandas as pd
@@ -46,6 +47,18 @@ def optimal_play_table() -> pd.DataFrame:
     result_df = pd.concat(df_list)
 
     return result_df
+
+def category_score() -> pd.DataFrame:
+
+    df = optimal_play_table()
+    score_list = []
+
+    for i in range(1,16):
+        score = find_category_score(df[df["Throws_left"] == 2], i)
+        score_list.append(score)
+
+    
+    return pd.DataFrame(score_list)
 
 
 
