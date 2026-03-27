@@ -1,16 +1,12 @@
 import random
 from python_boilerplate.hands import last_layer, keep_hands, outcomes, make_prob_table
-from python_boilerplate.solver import build_value_layers
+from python_boilerplate.solver import build_value_layers, expected_value_for_hold, maximize_expected_value, backward_value_update
 from python_boilerplate.utils import convert_to_pandas
 from python_boilerplate.simulations import generate_hand
 import python_boilerplate.scoring as score 
 
-#terminal_state = last_layer(score.one_pair)
-#print(backward_value_update(layer = terminal_state))
-#one_pair = build_value_layers(score.one_pair)
-#chance = build_value_layers(score.chance) 
-#print(convert_to_pandas(one_pair))
-#print(chance)
-#print(generate_hand((1,0,0,0,0,0)))
-
-
+last_layer_dict = last_layer(score.chance)
+#hold_prob = expected_value_for_hold(last_layer_dict,(0, 0, 0, 0, 1, 2), 2)[1]
+#print(maximize_expected_value(last_layer_dict, ((0,3,0,0,0,0), (0,0,1,2,0,0), (0,0,0,0,0,3)))[1])
+#backward_layer = backward_value_update(last_layer_dict, 1)
+print(build_value_layers(score.one_pair))

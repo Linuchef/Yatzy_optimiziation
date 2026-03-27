@@ -106,9 +106,14 @@ def make_prob_table(
     return prob_dict
 
 def last_layer(
-        func : Union[Callable[[tuple[int,...]],int], Callable[[tuple[int,...], int], int]],
+        func : Union[
+            Callable[[tuple[int,...]],int], 
+            Callable[[tuple[int,...], int], int]],
         face : int = None
-        ) -> Dict[tuple[int,...], list[None, int, int]]:
+        ) -> tuple[
+            Dict[tuple[int,...], list[None, int, int]], 
+            Dict[tuple[int,...], Dict[int, float]]
+            ]:
     """
     For each possible hand, the function finds the 
     score given a category in yatzy 
@@ -130,18 +135,26 @@ def last_layer(
 
     hands = dice_combinations(dice_thrown=DICE_COUNT,num_sides=NUM_SIDES)
     layer = {}
+    layer_prob = {}
 
     if face is None:
         for h in hands:
             score = func(h)
             layer[h] = [None, score, 0]
+            
+            layer_prob[h] = {score : 1}
     else:
         for h in hands:
             score = func(h,face)
             layer[h] = [None, score, 0]
 
+            layer_prob[h] = {score : 1}
+    
 
-    return layer
+
+
+    return (layer, layer_prob)
+
 
 def outcomes(throw : int) ->  Dict[tuple[int,...], list[Union[float, tuple[int,...]]]]:
 

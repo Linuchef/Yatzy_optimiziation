@@ -7,21 +7,21 @@ import pandas as pd
 def optimal_play_table() -> pd.DataFrame:
 
     # Making the tables for each category
-    ones = build_value_layers(s.same_face_value, 1)
-    twos = build_value_layers(s.same_face_value, 2)
-    threes = build_value_layers(s.same_face_value, 3)
-    fours = build_value_layers(s.same_face_value, 4)
-    fives = build_value_layers(s.same_face_value, 5)
-    sixes = build_value_layers(s.same_face_value, 6)
-    one_pair = build_value_layers(s.one_pair)
-    two_pairs = build_value_layers(s.two_pairs)
-    three_of_a_kind = build_value_layers(s.three_of_a_kind)
-    four_of_a_kind = build_value_layers(s.four_of_a_kind)
-    small_straight = build_value_layers(s.small_straight)
-    large_straight = build_value_layers(s.large_straight)
-    full_house = build_value_layers(s.full_house)
-    chance = build_value_layers(s.chance)
-    yatzy = build_value_layers(s.yatzy)
+    ones = build_value_layers(s.same_face_value, 1)[0]
+    twos = build_value_layers(s.same_face_value, 2)[0]
+    threes = build_value_layers(s.same_face_value, 3)[0]
+    fours = build_value_layers(s.same_face_value, 4)[0]
+    fives = build_value_layers(s.same_face_value, 5)[0]
+    sixes = build_value_layers(s.same_face_value, 6)[0]
+    one_pair = build_value_layers(s.one_pair)[0]
+    two_pairs = build_value_layers(s.two_pairs)[0]
+    three_of_a_kind = build_value_layers(s.three_of_a_kind)[0]
+    four_of_a_kind = build_value_layers(s.four_of_a_kind)[0]
+    small_straight = build_value_layers(s.small_straight)[0]
+    large_straight = build_value_layers(s.large_straight)[0]
+    full_house = build_value_layers(s.full_house)[0]
+    chance = build_value_layers(s.chance)[0]
+    yatzy = build_value_layers(s.yatzy)[0]
 
     ones_df = convert_to_pandas(ones, "ones", 1)
     twos_df = convert_to_pandas(twos, "twos", 2)

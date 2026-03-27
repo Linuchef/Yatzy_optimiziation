@@ -3,14 +3,20 @@ from python_boilerplate.utils import dice_missing
 from python_boilerplate.constants import DICE_COUNT, NUM_SIDES, NUM_THROWS
 from typing import Dict, Callable, Union
 
-def expected_value_for_hold(
-        layer : Dict[tuple[int,...], float], 
+def expected_value_for_hold (
+        layer : tuple[
+            Dict[tuple[int,...], list[None, int, int]], 
+            Dict[tuple[int,...], Dict[int, float]]
+            ], 
         held_dice: tuple[int,...],
         num_rerolled : int
-        ) -> float: 
+        ) -> tuple[
+            float,
+            Dict[int, float]
+        ]: 
     
     """
-    Find expected score for a specific hold of dices.  
+    Find expected score and probability distribution for a specific hold of dices.  
     
     :param layer: Current dictionary of maximum expected 
     scores after a specific number of throws for a given hand.
@@ -25,17 +31,41 @@ def expected_value_for_hold(
 
     current_val = 0
     outcomes_throw = outcomes(throw = num_rerolled) # Find probability for all combinations of throws
+    layer_expected_value = layer[0]
+    layer_prob_dist = layer[1]
+    prob_dict = {}
 
     for key in outcomes_throw.keys():
         resulting_hand = tuple(a + b for a,b in zip(held_dice, key)) # Element wise addition 
-        current_val += outcomes_throw[key][1] * layer[resulting_hand][1]
+        current_val += outcomes_throw[key][1] * layer_expected_value[resulting_hand][1]
+
+        ###### Managing the probability distribution of the hold ######
+        hand_score_distribution = layer_prob_dist[resulting_hand]
+
+        for score, prob in hand_score_distribution.items():
+
+            if score in prob_dict:
+
+                prob_dict[score] += prob * outcomes_throw[key][1]
+            
+            else:
+                prob_dict[score] = prob * outcomes_throw[key][1]
+
     
-    return current_val
+    return (current_val, prob_dict)
 
 def maximize_expected_value (
-        layer : Dict[tuple[int,...], float],
+        layer : tuple[
+            Dict[tuple[int,...], list[None, int, int]], 
+            Dict[tuple[int,...], Dict[int, float]]
+            ],
         holds : tuple[tuple[int,...]]
-        ) -> list[tuple[int,...], int]:
+        ) -> tuple[
+                list[
+                    tuple[int,...], 
+                    int
+                    ],
+                    Dict[int, float]]:
     
     """
     Finds the held dice of a hand yielding the biggest expected value. 
@@ -46,7 +76,12 @@ def maximize_expected_value (
     :param holds: a tuple containing all possible holds for a hand
     :type holds: tuple[tuple[int, ...]]
     :return: the held dice with best expectation along with its expectation. 
-    :rtype: list[tuple[int, ...], int]
+    :rtype: tuple[
+                list[
+                    tuple[int,...], 
+                    int
+                    ],
+                    Dict[int, float]]:
     """
     
     val = 0
@@ -59,16 +94,27 @@ def maximize_expected_value (
             held_dice = h, 
             num_rerolled = num_rerolled)
         
-        if expected_val > val:
-            val = expected_val
+        if expected_val[0] > val:
+            val = expected_val[0]
             best_hold = h
+            prob_dist = expected_val[1]
     
-    return [best_hold, val]
+    return ([best_hold, val], prob_dist)
 
 def backward_value_update (
         layer : Dict[tuple[int,...],int],
         throws_left : int
-        )-> any:
+        )-> tuple[
+                Dict[
+                    tuple[int,...], 
+                    list[
+                        tuple[int,...],
+                        int,
+                        int
+                        ]
+                ],
+                Dict[int, float]
+        ]:
     
     """
     Function that returns a dictionary containing all optimal 
@@ -77,12 +123,13 @@ def backward_value_update (
     :param layer: current state values
     :type layer: Dict[tuple[int, ...], float]
     :param throws_left: Number of throws left for a given round
-    :type throws_left: int
+    :type throws_left: int 
     :return: Previous state values
     :rtype: Dict[tuple[int, ...], float]
     """
 
     previous_layer_with_hold = {}
+    previous_prob_distr_layer = {}
     
     hand_combinations = dice_combinations(
         dice_thrown = DICE_COUNT, 
@@ -91,17 +138,31 @@ def backward_value_update (
     for hand in hand_combinations:
 
         holds = keep_hands(hand = hand)
-        optimal_hold = maximize_expected_value(layer = layer, holds = holds)
+        maximized_value = maximize_expected_value(layer = layer, holds = holds)
+        optimal_hold = maximized_value[0]
         optimal_hold.append(throws_left)
 
         previous_layer_with_hold[hand] = optimal_hold
+        previous_prob_distr_layer[hand] = maximized_value[1]
 
-    return previous_layer_with_hold
+    return (previous_layer_with_hold, previous_prob_distr_layer)
 
 def build_value_layers(
-        score_func : Union[Callable[[tuple[int,...]],int], Callable[[tuple[int,...], int], int]],
+        score_func : Union[
+            Callable[
+                [tuple[int,...]],int], 
+            Callable[
+                [tuple[int,...], int], int]],
+
         face : int = None
-        ) -> list[Dict[tuple[int,...],float]]:
+        ) -> tuple[
+            list[
+                Dict[
+                    tuple[int,...],float]],
+            list[
+                Dict[
+                    tuple[int, ...], Dict[int, float]
+                    ]]]:
     
     """
     Calculate all the layers and put them in a list.
@@ -116,19 +177,24 @@ def build_value_layers(
     """
     
     value_layers = []
+    prob_layers = []
 
     layer = last_layer(score_func, face)
-    value_layers.append(layer)
+    value_layers.append(layer[0])
+    prob_layers.append(layer[1])
 
     for i in range(NUM_THROWS - 1):
 
         previous_layer = backward_value_update(layer = layer, throws_left = i + 1)
         layer = previous_layer
-        value_layers.append(layer)
+        value_layers.append(layer[0])
+        prob_layers.append(layer[1])
 
-    return value_layers
+    return (value_layers, prob_layers)
 
 
+
+    
 
 
 

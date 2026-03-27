@@ -1,4 +1,5 @@
 from python_boilerplate.probability import hand_probability
+from typing import Callable, Union
 import pandas as pd
 
 def find_category_score(
@@ -18,3 +19,4 @@ def find_category_score(
         "Category_name" : filtered_df["Category_name"].iloc[0],
         "Optimal_score" : sum_score
         }
+
