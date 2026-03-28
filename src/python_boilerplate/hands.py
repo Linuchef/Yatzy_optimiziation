@@ -123,14 +123,22 @@ def last_layer(
 
     :param func: function that inputs one hand
     and outputs the score of that hand. 
-    :type func: Union[Callable[[tuple[int,...]],int], Callable[[tuple[int,...], int], int]]
-    :return: Returns a dictionary with a given hand
-    as the key, and the value being a list consisting of the optimal
-    hold (all None as there are no remaining throws), the 
-    score and an element indicating the number of remaining 
-    throws (0 in this case for all key-value pairs).
+    :type func: Union[
+            Callable[[tuple[int,...]],int], 
+            Callable[[tuple[int,...], int], int]]
+    :param face: input of score function. Default is set to None. 
+    If parameter is set to 0, the score function recognizes that that the first 6 categories are not relevant.
+    :type face: int
+    :return: Returns a tuple consisting of a dictionary with a 
+    given hand as the key, and the value being a list consisting of the optimal hold 
+    (all None as there are no remaining throws), the  score and an element indicating the number of remaining 
+    throws (0 in this case for all key-value pairs). The other element of the tuple is the belonging 
+    probability distribution of each hand written as a dictionary.  
     
-    :rtype: Dict[tuple[int,...], list[None, int, int]]
+    :rtype: tuple[
+            Dict[tuple[int,...], list[None, int, int]], 
+            Dict[tuple[int,...], Dict[int, float]]
+            ]
     """
 
     hands = dice_combinations(dice_thrown=DICE_COUNT,num_sides=NUM_SIDES)
