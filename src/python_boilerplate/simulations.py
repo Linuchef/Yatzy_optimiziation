@@ -166,10 +166,11 @@ def simulate_forced_yatzy(
         if (i == 5) and (tot_score >= 42):
             tot_score += 50
 
-            print()
-            print("Score in first half is over 42")
-            print("Current score : ", tot_score)
-            print()
+            if log:
+                print()
+                print("Score in first half is over 42")
+                print("Current score : ", tot_score)
+                print()
     
     return tot_score
 

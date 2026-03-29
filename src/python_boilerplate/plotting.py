@@ -4,7 +4,7 @@ def plot_histogram(score_values : list[int]) -> None:
 
     n = len(score_values)
 
-    plt.hist(score_values, color = 'skyblue', edgecolor = 'black')
+    plt.hist(score_values, color = 'skyblue', edgecolor = 'black', bins = 40)
 
     plt.xlabel("score")
     plt.ylabel("Frequency")

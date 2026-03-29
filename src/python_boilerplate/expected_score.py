@@ -60,7 +60,40 @@ def extra_points_prob(extra_points_thresh : int = 42) -> float:
         prob_dict = find_category_distribution(same_face_value, i)
         prob_list.append(prob_dict)
 
-   return 
+    def iterate_recursive (
+            index : int, 
+            current_sum : float,
+            current_prob : float) -> float:
+
+        if index == 6:
+            if current_sum >= extra_points_thresh:
+                return current_prob
+            else:
+                return 0
+            
+        total_prob = 0
+        current_distribution = prob_list[index]
+
+        for score, prob in current_distribution.items():
+
+            total_prob += iterate_recursive(
+                index + 1, 
+                current_sum + score, 
+                current_prob * prob)
+
+        return total_prob
+
+    return iterate_recursive(0, 0, 1)
+
+
+def expected_value_for_game(
+        df : pd.DataFrame, 
+        bonus_point : int = 50) -> float:
+
+    bonus_prob = extra_points_prob()
+
+    return df['Optimal_score'].sum() + bonus_point * bonus_prob
+
 
 
 
