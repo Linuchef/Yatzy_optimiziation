@@ -14,6 +14,32 @@ def sum_tuples(x : tuple[int,...], y : tuple[int, ...]) -> tuple[int, ...]:
 
     return tuple(a + b for a,b in zip(x,y))
 
+def frequency_to_value(x : tuple[int,...]) -> tuple[int,...]:
+    hand = []
+
+    if x == None:
+        return None
+    
+    for val,freq in enumerate(x):
+
+        if freq > 0:
+
+            for i in range(freq):
+                hand.append(val + 1)
+
+    return tuple(hand)
+
+def format_tuple(x : tuple[int, ...]) -> str:
+
+    if x == ():
+        return "-"
+    
+    if x == None:
+        return "N/A"
+    
+    return "(" + ", ".join(map(str, x)) + ")"
+
+
 
 def convert_to_pandas(
         layers : list[Dict[tuple[int, ...], list[tuple[int, ...], float, int]]],
@@ -50,5 +76,16 @@ def convert_to_pandas(
             })
 
     return pd.DataFrame(rows)
+
+def change_dice_representation(df : pd.DataFrame) -> pd.DataFrame:
+    
+    df["Hand"] = df["Hand"].apply(frequency_to_value)
+    df["Hold"] = df["Hold"].apply(frequency_to_value)
+
+    df["Hand"] = df["Hand"].apply(format_tuple)
+    df["Hold"] = df["Hold"].apply(format_tuple)
+
+    return df
+
 
     
