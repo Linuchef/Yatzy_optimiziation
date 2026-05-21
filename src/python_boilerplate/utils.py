@@ -85,6 +85,14 @@ def change_dice_representation(df : pd.DataFrame) -> pd.DataFrame:
     df["Hand"] = df["Hand"].apply(format_tuple)
     df["Hold"] = df["Hold"].apply(format_tuple)
 
+    df = df.rename(columns={
+        "Expected_value" : "Expected Value",
+        "Throws_left" : "Throws left",
+        "Category_name" : "Category name"
+    })
+
+    df = df.drop(columns=["Category_number"])
+
     return df
 
 

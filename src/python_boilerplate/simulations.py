@@ -127,7 +127,7 @@ def simulate_forced_yatzy(
         df : pd.DataFrame, 
         num_categories : int = 15,
         log : bool = False
-        ) -> int:
+        ) -> tuple[int, bool]:
     
     """
     Simulates a game of forced yatzy playing optimally.
@@ -139,11 +139,12 @@ def simulate_forced_yatzy(
     :type num_categories: int = 15
     :param log: if set to true, prints out all choices and happenings
     :type log: bool
-    :return: the total score of simulated game.
-    :rtype: int
+    :return: A tuple consisting of the total score of simulated game and whether bonus was reached.
+    :rtype: tuple[int, bool]
     """
 
     tot_score = 0
+    bonus_reached = False
 
     for i in range(num_categories):
 
@@ -165,6 +166,8 @@ def simulate_forced_yatzy(
 
         if (i == 5) and (tot_score >= 42):
             tot_score += 50
+            bonus_reached = True
+
 
             if log:
                 print()
@@ -172,12 +175,12 @@ def simulate_forced_yatzy(
                 print("Current score : ", tot_score)
                 print()
     
-    return tot_score
+    return (tot_score, bonus_reached)
 
 def simulate_n_times(
         n : int, 
         df : pd.DataFrame
-        ) -> list[int]:
+        ) -> tuple[list[int], int]:
     
     """
     Simulates n games of forced yatzy playing 
@@ -189,19 +192,22 @@ def simulate_n_times(
     :type df: pd.DataFrame
     :param log: if set to true, prints out all choices and happenings
     :type log: bool
-    :return: a list with n scores from all 
-    n simulated yatzy games
-    :rtype: list[int]
+    :return: a tuple consisting of a list with n scores from all 
+    n simulated yatzy games and the percentage of times bonus points was reached
+    :rtype: tuple[list[int], int]
     """
     
     score_list = []
 
+    bonus_reached = 0
     for i in range(n):
-        score = simulate_forced_yatzy(df)
-        score_list.append(score)
+        simulation = simulate_forced_yatzy(df)
+        score_list.append(simulation[0])
 
+        if simulation[1] == True:
+            bonus_reached += 1
 
-    return score_list
+    return (score_list, bonus_reached / n)
 
 
 
