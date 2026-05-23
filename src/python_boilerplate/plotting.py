@@ -20,7 +20,7 @@ def category_distribution_plot(
     x = list(dic.keys())
     y = list(dic.values())
 
-    plt.bar(x, y, width=0.5)
+    plt.bar(x, y, width=0.7)
     plt.grid(axis='y', alpha=0.3)
 
     if same_face:
